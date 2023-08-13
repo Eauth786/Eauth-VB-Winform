@@ -1,4 +1,4 @@
-﻿Imports System.IO
+Imports System.IO
 Imports System.Net.Http
 Imports System.Net.Http.Headers
 Imports System.Runtime.InteropServices
@@ -141,6 +141,11 @@ Namespace Eauth
             ElseIf message = "invalid_request" Then
                 LogEauthError(invalidRequestMessage)
             ElseIf message = "version_outdated" Then
+                Dim download_link As String = document.RootElement.GetProperty("download_link").GetString()
+                If download_link <> "" Then
+                    Process.Start(download_link)
+                End If
+
                 LogEauthError(outdatedVersionMessage)
             ElseIf message = "maximum_sessions_reached" Then
                 LogEauthError(busySessionsMessage)
