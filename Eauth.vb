@@ -25,7 +25,7 @@ Namespace Eauth
         Private overcrowdedSessionMessage As String = "Session limit exceeded. Please re-launch the app!"
         Private expiredSessionMessage As String = "Your session has timed out. please re-launch the app!"
         Private invalidUserMessage As String = "Incorrect login credentials!"
-        Private bannedHwidMessage As String = "Access denied!"
+        Private bannedUserMessage As String = "Access denied!"
         Private incorrectHwidMessage As String = "Hardware ID mismatch. Please try again with the correct device!"
         Private expiredUserMessage As String = "Your subscription has ended. Please renew to continue using our service!"
         Private usedNameMessage As String = "Username already taken. Please choose a different username!"
@@ -121,6 +121,7 @@ Namespace Eauth
                 {"sort", "init"},
                 {"appkey", applicationKey},
                 {"acckey", accountKey},
+                {"hwid", GetHardwareID()},
                 {"version", applicationVersion.ToString()}
             }
             Dim response = Await EauthRequest(data)
@@ -140,6 +141,8 @@ Namespace Eauth
                 LogEauthError(invalidApplicationKeyMessage)
             ElseIf message = "invalid_request" Then
                 LogEauthError(invalidRequestMessage)
+            ElseIf message = "user_is_banned" Then
+                LogEauthError(bannedUserMessage)
             ElseIf message = "version_outdated" Then
                 Dim download_link As String = document.RootElement.GetProperty("download_link").GetString()
                 If download_link <> "" Then
@@ -194,8 +197,8 @@ Namespace Eauth
                 LogEauthError(invalidKeyMessage)
             ElseIf message = "maximum_users_reached" Then
                 LogEauthError(upgradeYourEauthMessage)
-            ElseIf message = "hwid_is_banned" Then
-                LogEauthError(bannedHwidMessage)
+            ElseIf message = "user_is_banned" Then
+                LogEauthError(bannedUserMessage)
             End If
 
             Return register
@@ -258,8 +261,8 @@ Namespace Eauth
                 LogEauthError(expiredSessionMessage)
             ElseIf message = "account_unavailable" Then
                 LogEauthError(invalidUserMessage)
-            ElseIf message = "hwid_is_banned" Then
-                LogEauthError(bannedHwidMessage)
+            ElseIf message = "user_is_banned" Then
+                LogEauthError(bannedUserMessage)
             ElseIf message = "hwid_incorrect" Then
                 LogEauthError(incorrectHwidMessage)
             ElseIf message = "subscription_expired" Then
